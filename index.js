@@ -18,9 +18,15 @@ const cards = (() => {
     return output;
 })();
 
-const getMissingCard = async (key) => cards[await client.incr(key)] || defaultMessage
+async function getMissingCard(key) {
+	return cards[await client.incr(key)] || defaultMessage
+}
 
-app.get('/card_add', async (req, res) => res.send(await getMissingCard(req.query.id)));
+async function cardAdd(req, res) {
+	return res.send(await getMissingCard(req.query.id))
+}
+
+app.get('/card_add', cardAdd);
 
 app.get('/ready', async (req, res) => {
     await client.ping();
