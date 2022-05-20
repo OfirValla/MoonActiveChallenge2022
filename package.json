@@ -14,6 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "redis": "^4.0.1",
-    "restana": "^4.9.5"
+    "turbo-http": "^0.3.2"
   }
 }

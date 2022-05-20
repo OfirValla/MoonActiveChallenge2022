@@ -1,36 +1,36 @@
 const fs = require('fs');
-const app = require('restana')();
+const app = require('turbo-http');
 const port = +process.argv[2] || 3000;
 
 const client = require('redis').createClient();
+const server = app.createServer(serveApp);
 client.on('error', (err) => console.log('Redis Client Error', err));
 
 client.on('ready', () => {
-    app.start(port).then(server => {
-        console.log(`Example app listening at http://0.0.0.0:${port}`);
-    });
+    console.log(`Challenge app listening at http://0.0.0.0:${port}`);
+    server.listen(port);
 });
 
-const defaultMessage = { id: 'ALL CARDS' };
+const readyMessage = '{"ready": true}';
+const defaultMessage = '{"id":"ALL CARDS"}';
 const cards = (() => {
-    const output = JSON.parse(fs.readFileSync('./cards.json'));
+    let output = JSON.parse(fs.readFileSync('./cards.json'));
     output.unshift({ id: 'NEVER USED' });
+    output = output.map(card => JSON.stringify(card));
     return output;
 })();
 
-async function getMissingCard(key) {
-    return cards[await client.incr(key)] || defaultMessage
+async function serveApp(req, res) {
+    if (req.url.startsWith('/c')) {
+        const card = cards[await client.incr(req.url.substr(13))] || defaultMessage;
+        res.setHeader('Content-Length', card.length);
+        res.write(card);
+        return;
+    }
+
+    res.setHeader('Content-Length', readyMessage.length);
+    res.write(readyMessage);
+    return;
 }
-
-async function cardAdd(req, res) {
-    return res.send(await getMissingCard(req.query.id))
-}
-
-app.get('/card_add', cardAdd);
-
-app.get('/ready', async (req, res) => {
-    await client.ping();
-    res.send({ ready: true });
-});
 
 client.connect();
