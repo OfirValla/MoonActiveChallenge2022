@@ -1,4 +1,4 @@
-const fs = require('fs');;
+const fs = require('fs');
 const app = require('restana')();
 const port = +process.argv[2] || 3000;
 
