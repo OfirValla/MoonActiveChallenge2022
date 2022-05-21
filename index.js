@@ -16,7 +16,7 @@ const defaultMessage = '{"id":"ALL CARDS"}';
 const cards = (() => {
     let output = JSON.parse(fs.readFileSync('./cards.json'));
     output.unshift({ id: 'NEVER USED' });
-    output = output.map(card => JSON.stringify(card));
+    output = output.map(card => Buffer.from(JSON.stringify(card)));
     return output;
 })();
 
