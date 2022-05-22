@@ -22,7 +22,7 @@ const cards = (() => {
 
 async function serveApp(req, res) {
     if (req.url.startsWith('/c')) {
-        const card = cards[await client.incr(req.url.substr(13))] || defaultMessage;
+        const card = cards[await client.incr(req.url)] || defaultMessage;
         res.end(card);
         return;
     }
