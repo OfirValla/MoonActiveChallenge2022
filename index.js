@@ -24,12 +24,12 @@ async function serveApp(req, res) {
     if (req.url.startsWith('/c')) {
         const card = cards[await client.incr(req.url.substr(13))] || defaultMessage;
         res.setHeader('Content-Length', card.length);
-        res.write(card);
+        res.end(card);
         return;
     }
 
     res.setHeader('Content-Length', readyMessage.length);
-    res.write(readyMessage);
+    res.end(readyMessage);
     return;
 }
 
